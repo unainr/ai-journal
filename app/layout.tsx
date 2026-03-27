@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { cn } from "@/lib/utils";
+
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
@@ -28,8 +32,8 @@ export default function RootLayout({
 			<html
 				lang="en"
 				suppressHydrationWarning
-				className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-				<body >
+				className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", figtree.variable)}>
+				<body>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="light"
