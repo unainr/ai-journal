@@ -4,8 +4,11 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
+import { ReactQueryProviders } from "@/components/providers/react-query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -32,13 +35,26 @@ export default function RootLayout({
 			<html
 				lang="en"
 				suppressHydrationWarning
-				className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", figtree.variable)}>
+				className={cn(
+					"h-full",
+					"antialiased",
+					geistSans.variable,
+					geistMono.variable,
+					"font-sans",
+					figtree.variable,
+				)}>
 				<body>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="light"
 						disableTransitionOnChange>
-						{children}
+						<ReactQueryProviders>
+							{" "}
+							<TooltipProvider>
+								{children}
+								<Toaster/>	
+							</TooltipProvider>
+						</ReactQueryProviders>
 					</ThemeProvider>
 				</body>
 			</html>
