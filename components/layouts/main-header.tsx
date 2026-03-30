@@ -16,8 +16,7 @@ import Image from "next/image"
 
 const menuItems = [
    { name: 'Home', href: '/' },
-   { name: 'New Call', href: '/new-call' },
-    { name: 'Pricing', href: '/pricing' },
+   { name: 'dashboard', href: '/dashboard' },
   
 ]
 
