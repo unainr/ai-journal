@@ -5,13 +5,14 @@ import { getJournals } from "../server/create-journal";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { QUERY_KEYS } from "@/constants";
 
 
 export default function JournalSidebarList() {
  
  const {data:journals,isLoading} = useQuery(
     {
-        queryKey:['journals'],
+        queryKey:QUERY_KEYS.journals,
         queryFn:getJournals
     }
     

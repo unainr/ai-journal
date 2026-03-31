@@ -15,33 +15,35 @@ import { useState } from "react";
 import { deleteJournal } from "../server/create-journal";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants";
 
 export function DeleteJournalDialog({ journalId }: { journalId: string }) {
   const [open, setOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const handleDelete = async () => {
-   try{
-    setDeleting(true);
-    const result = await deleteJournal(journalId);
 
-    if (!result.success) {
-      toast.error(result.error ?? "Failed to delete");
-      return;
-    }else{
+const { mutateAsync: removeJournal, isPending } = useMutation({
+  mutationFn: deleteJournal,
 
-        toast.success("Journal deleted");
-        setOpen(false);
-        router.push("/dashboard");
-    }
-   }catch(error){
-    console.log(error)
-   }finally{
-    setDeleting(false);
-   }
-   
-  };
+  onSuccess: () => {
+    // Refetch journals after deletion
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.journals });
+    toast.success("Journal deleted");
+    setOpen(false);
+    router.push("/dashboard");
+  },
+
+  onError: (error: any) => {
+    toast.error(error?.message || "Failed to delete");
+  },
+});
+
+// Usage in handler
+const handleDelete = () => {
+  removeJournal(journalId);
+};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,7 +51,7 @@ export function DeleteJournalDialog({ journalId }: { journalId: string }) {
         <Button
           variant="ghost"
           size="sm"
-          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
         >
           <Trash2 size={14} />
         </Button>
@@ -59,24 +61,25 @@ export function DeleteJournalDialog({ journalId }: { journalId: string }) {
         <DialogHeader>
           <DialogTitle>Delete journal</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This journal will be permanently deleted.
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter>
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
-            disabled={deleting}
+            disabled={isPending}
           >
             Cancel
           </Button>
+
           <Button
             variant="destructive"
             onClick={handleDelete}
-            disabled={deleting}
+            disabled={isPending}
           >
-            {deleting ? (
+            {isPending ? (
               <>
                 <Loader2 size={13} className="animate-spin mr-2" />
                 Deleting…

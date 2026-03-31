@@ -24,6 +24,9 @@ import { AiMermaidDrawer } from "./ai-mermaid-drawer";
 import AIFloatingBar from "./ai-floating-bar";
 import { DeleteJournalDialog } from "./delete-journal";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants";
+
 type Props = {
   initialTitle?: string;
   initialContent?: string;
@@ -42,6 +45,7 @@ const [imageUrls, setImageUrls] = useState<string[]>(initialImageUrls);
 const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 const router = useRouter()
+const queryClient = useQueryClient();
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -71,49 +75,59 @@ const router = useRouter()
     }
   };
 
-  const handleSave = async () => {
-    if (!editor) return;
-    const content = editor.getHTML();
-    if (!content || editor.isEmpty) {
-      toast.error("Nothing to save");
-      return;
-    }
-
-    const extractedUrls: string[] = [];
-    const imgTags = content.match(/<img[^>]+src="([^">]+)"/g);
-    if (imgTags) {
-      imgTags.forEach((tag) => {
-        const srcMatch = tag.match(/src="([^">]+)"/);
-        if (srcMatch) extractedUrls.push(srcMatch[1]);
-      });
-    }
-
-    setSaving(true);
-    let result;
-    
+  
+    const { mutateAsync: saveJournal } = useMutation({
+  mutationFn: async (payload: any) => {
     if (journalId) {
-      result = await updateJournal({
-        id: journalId,
-        title: title || undefined,
-        content,
-        imageUrls: extractedUrls.length > 0 ? extractedUrls : undefined,
-      });
+      return await updateJournal(payload);
     } else {
-      result = await createJournal({
-        title: title || undefined,
-        content,
-        imageUrls: extractedUrls.length > 0 ? extractedUrls : undefined,
-      });
+      return await createJournal(payload);
     }
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.journals });
+  },
+});
 
-    setSaving(false);
-    if (result?.error) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success(journalId ? "Journal updated" : "Journal saved");
-    router.push(`/dashboard/${result.data?.id}`);
-  };
+  const handleSave = async () => {
+  if (!editor) return;
+
+  const content = editor.getHTML();
+  if (!content || editor.isEmpty) {
+    toast.error("Nothing to save");
+    return;
+  }
+
+  const extractedUrls: string[] = [];
+  const imgTags = content.match(/<img[^>]+src="([^">]+)"/g);
+
+  if (imgTags) {
+    imgTags.forEach((tag) => {
+      const srcMatch = tag.match(/src="([^">]+)"/);
+      if (srcMatch) extractedUrls.push(srcMatch[1]);
+    });
+  }
+
+  setSaving(true);
+
+  const result = await saveJournal({
+    id: journalId,
+    title: title || undefined,
+    content,
+    imageUrls: extractedUrls.length > 0 ? extractedUrls : undefined,
+  });
+
+  setSaving(false);
+
+  if (result?.error) {
+    toast.error(result.error);
+    return;
+  }
+
+  toast.success(journalId ? "Journal updated" : "Journal saved");
+
+  router.push(`/dashboard/${result.data?.id}`);
+};
 
   const ToolbarBtn = ({
     onClick,
