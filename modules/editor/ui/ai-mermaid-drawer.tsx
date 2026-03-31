@@ -65,9 +65,9 @@ export function AiMermaidDrawer() {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-1.5 px-2.5 h-8 rounded-md text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors text-xs"
+         
         >
-          <Sparkles size={13} />
+          <Sparkles size={5} />
           <span>AI Diagram</span>
         </Button>
       </DrawerTrigger>

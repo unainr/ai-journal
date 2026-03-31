@@ -16,19 +16,11 @@ export const journals = pgTable("journals", {
 	title: text("title"),
 	content: text("content").notNull(), // raw (editor HTML)
 
-	// AI outputs
-	summary: text("summary"),
-	emotions: jsonb("emotions"),
-	tone: text("tone"),
-	tags: jsonb("tags"),
-
-	// visualization
-	mermaid: text("mermaid"),
 
 	// sharing
 	isPublic: boolean("is_public").default(false),
 	isUnlisted: boolean("is_unlisted").default(false),
-	slug: text("slug").unique(),
+
 
 	// media
 	imageUrls: jsonb("image_urls").$type<string[]>().default([]),
