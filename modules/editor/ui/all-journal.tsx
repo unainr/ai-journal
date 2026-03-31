@@ -21,9 +21,10 @@ console.log(journals?.data)
   return (
     <div className="flex flex-col gap-1">
       {/* New entry button */}
-     <Link href={'/dashboard'}>
+     <Link href={'/dashboard/new'}>
       <Button
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all duration-150 text-xs font-medium mb-2 w-full text-left"
+      variant={'default'}
+        className="w-full"
         >
         <PenLine size={12} />
         New entry

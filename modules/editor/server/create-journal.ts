@@ -104,3 +104,19 @@ try {
   return{success:false, error: "Failed to fetch journal"}
 }
 }
+
+//TODO: Delete Journal 
+export const deleteJournal = async (id: string) => {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Unauthorized" }; // ✅ consistent shape
+
+  try {
+    await db
+      .delete(journals)
+      .where(and(eq(journals.id, id), eq(journals.userId, userId)));
+    return { success: true, error: null }; // ✅ always return error key
+  } catch (error) {
+    console.error("Delete journal error:", error);
+    return { success: false, error: "Failed to delete journal" };
+  }
+};

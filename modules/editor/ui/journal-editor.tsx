@@ -21,6 +21,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AiMermaidDrawer } from "./ai-mermaid-drawer";
+import AIFloatingBar from "./ai-floating-bar";
+import { DeleteJournalDialog } from "./delete-journal";
+import { useRouter } from "next/navigation";
 type Props = {
   initialTitle?: string;
   initialContent?: string;
@@ -38,7 +41,7 @@ export default function JournalEditor({
 const [imageUrls, setImageUrls] = useState<string[]>(initialImageUrls);  
 const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-
+const router = useRouter()
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -109,6 +112,7 @@ const [saving, setSaving] = useState(false);
       return;
     }
     toast.success(journalId ? "Journal updated" : "Journal saved");
+    router.push(`/dashboard/${result.data?.id}`);
   };
 
   const ToolbarBtn = ({
@@ -123,7 +127,7 @@ const [saving, setSaving] = useState(false);
     title?: string;
   }) => (
     <Button
-    variant={'ghost'}
+    variant={'secondary'}
       type="button"
       onClick={onClick}
       title={tip}
@@ -131,8 +135,8 @@ const [saving, setSaving] = useState(false);
         flex items-center justify-center w-8 h-8 rounded-md transition-all duration-150
         ${
           active
-            ? "bg-red/10 text-white"
-            : "text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
+            ?? "bg-red/40"
+            
         }
       `}
     >
@@ -147,18 +151,23 @@ const [saving, setSaving] = useState(false);
       <div className="w-full  flex flex-col gap-0">
 
         {/* Header */}
-        <div className="mb-6">
-          <p className="text-xs text-zinc-600 uppercase tracking-widest mb-3 font-medium">
-            New entry
-          </p>
-          <input
-            type="text"
-            placeholder="Untitled"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-transparent text-3xl font-semibold  outline-none placeholder:text-zinc-700 tracking-tight"
-          />
-        </div>
+       <div className="mb-6 flex items-start justify-between">
+  <div>
+    <p className="text-xs text-zinc-600 uppercase tracking-widest mb-3 font-medium">
+      {journalId ? "Editing" : "New entry"}
+    </p>
+    <input
+      type="text"
+      placeholder="Untitled"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      className="w-full bg-transparent text-3xl font-semibold outline-none placeholder:text-zinc-700 tracking-tight"
+    />
+  </div>
+
+  {/* Delete — only shows when editing existing journal */}
+  {journalId && <DeleteJournalDialog journalId={journalId} />}
+</div>
 
         {/* Editor card */}
         <div className="rounded-2xl overflow-hidden">
@@ -230,7 +239,7 @@ const [saving, setSaving] = useState(false);
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex items-center gap-1.5 px-2.5 h-8 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all duration-150 text-xs disabled:opacity-40"
+              size={'sm'}
             >
               <ImageIcon size={13} />
               <span>{uploading ? "Uploading…" : "Image"}</span>
@@ -255,7 +264,10 @@ const [saving, setSaving] = useState(false);
           </div>
 
           {/* Editor content */}
-          <EditorContent editor={editor}  />
+         <div className="relative">
+        <AIFloatingBar editor={editor} />
+        <EditorContent editor={editor} />
+        </div>
 
           {/* Footer */}
           <div className="flex items-center justify-between px-6 py-3">
@@ -263,7 +275,7 @@ const [saving, setSaving] = useState(false);
               {wordCount} {wordCount === 1 ? "word" : "words"}
             </span>
 
-            <button
+            <Button
               type="button"
               onClick={handleSave}
               disabled={saving}
@@ -271,7 +283,7 @@ const [saving, setSaving] = useState(false);
             >
               <Save size={12} />
               {saving ? "Saving…" : "Save journal"}
-            </button>
+            </Button>
           </div>
         </div>
 
