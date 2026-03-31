@@ -22,19 +22,25 @@ export function DeleteJournalDialog({ journalId }: { journalId: string }) {
   const router = useRouter();
 
   const handleDelete = async () => {
+   try{
     setDeleting(true);
     const result = await deleteJournal(journalId);
-    setDeleting(false);
 
     if (!result.success) {
       toast.error(result.error ?? "Failed to delete");
       return;
-    }
+    }else{
 
-    toast.success("Journal deleted");
-    setOpen(false);
-    router.push("/dashboard");
-    router.refresh(); // ✅ refetches server data, sidebar list updates
+        toast.success("Journal deleted");
+        setOpen(false);
+        router.push("/dashboard");
+    }
+   }catch(error){
+    console.log(error)
+   }finally{
+    setDeleting(false);
+   }
+   
   };
 
   return (

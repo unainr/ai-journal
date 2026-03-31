@@ -17,7 +17,6 @@ export default function JournalSidebarList() {
     
  )
 
-console.log(journals?.data)
   return (
     <div className="flex flex-col gap-1">
       {/* New entry button */}
