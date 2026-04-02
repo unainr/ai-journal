@@ -19,9 +19,13 @@ const { open, reason, showUpgrade, onClose } = useUpgrade();
     if (!prompt.trim() || !editor) return;
 // ✅ check diagram limit
   const { allowed, error, upgrade } = await canGenerateDiagram();
-  if (!allowed) {
-    if (upgrade) showUpgrade(error ?? undefined);
-    else toast.error(error ?? "Not allowed");
+    if (!allowed) {
+    if (upgrade) {
+      // hide any UI if needed (optional)
+      showUpgrade(error ?? undefined); // show dialog immediately
+    } else {
+      toast.error(error ?? "Not allowed");
+    }
     return;
   }
     setGenerating(true);
