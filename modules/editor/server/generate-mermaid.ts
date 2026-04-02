@@ -2,8 +2,11 @@
 
 import { generateText } from "ai";
 import { createGroq, groq } from "@ai-sdk/groq";
+import { canGenerateDiagram } from "@/modules/pricing/server/pricing";
 
 export const generateMermaidCode = async (prompt: string) => {
+  const { allowed, error, upgrade } = await canGenerateDiagram();
+  if (!allowed) return { error, upgrade };
   try {
    
 

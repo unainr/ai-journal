@@ -7,14 +7,23 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { generateMermaidCode } from "../server/generate-mermaid";
 import { toast } from "sonner";
 import { Editor } from "@tiptap/react";
+import { useUpgrade } from "@/modules/pricing/hooks/use-upgrade";
+import { canGenerateDiagram } from "@/modules/pricing/server/pricing";
+import { UpgradeDialog } from "@/modules/pricing/ui/components/upgrade-dialog";
 
 export function AiMermaidBar({ editor }: { editor: Editor | null }) {
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
-
+const { open, reason, showUpgrade, onClose } = useUpgrade();
   const handleGenerate = async () => {
     if (!prompt.trim() || !editor) return;
-
+// ✅ check diagram limit
+  const { allowed, error, upgrade } = await canGenerateDiagram();
+  if (!allowed) {
+    if (upgrade) showUpgrade(error ?? undefined);
+    else toast.error(error ?? "Not allowed");
+    return;
+  }
     setGenerating(true);
     const result = await generateMermaidCode(prompt);
     
@@ -43,6 +52,8 @@ export function AiMermaidBar({ editor }: { editor: Editor | null }) {
   };
 
   return (
+    <>
+    
     <div className="flex items-center gap-3 px-6 py-3 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50 dark:bg-zinc-900/50">
       <Sparkles size={16} className="text-zinc-500 shrink-0" />
       <Input
@@ -74,5 +85,8 @@ export function AiMermaidBar({ editor }: { editor: Editor | null }) {
         )}
       </Button>
     </div>
+    {/* ✅ add this */}
+    <UpgradeDialog open={open} onClose={onClose} reason={reason} />
+    </>
   );
 }
