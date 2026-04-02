@@ -105,8 +105,8 @@ export default function AIFloatingBar({ editor }: { editor: Editor | null }) {
 
 if (result.error || !result.data) {
   if (result.upgrade) {
-    setVisible(false);
     showUpgrade(result.error ?? undefined); // ✅
+    setVisible(false);
     return;
   }
   toast.error(result.error ?? "AI failed, try again");
