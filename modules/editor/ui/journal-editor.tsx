@@ -26,6 +26,9 @@ import { DeleteJournalDialog } from "./delete-journal";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants";
+import { useUpgrade } from "@/modules/pricing/hooks/use-upgrade";
+import { UpgradeDialog } from "@/modules/pricing/ui/components/upgrade-dialog";
+import { canUploadImage } from "@/modules/pricing/server/pricing";
 
 type Props = {
   initialTitle?: string;
@@ -46,6 +49,9 @@ const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 const router = useRouter()
 const queryClient = useQueryClient();
+const { open, reason, showUpgrade, onClose } = useUpgrade();
+// TODO:Pricing dialog box 
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -63,6 +69,13 @@ const queryClient = useQueryClient();
   });
 
   const handleImageUpload = async (file: File) => {
+     // check image limit before uploading
+  const { allowed, error, upgrade } = await canUploadImage(imageUrls.length);
+  if (!allowed) {
+    if (upgrade) showUpgrade(error ?? undefined);
+    else toast.error(error ?? "Upload not allowed");
+    return;
+  }
     setUploading(true);
     const url = await ImageUpload(file);
     setUploading(false);
@@ -74,6 +87,7 @@ const queryClient = useQueryClient();
       toast.error("Image upload failed");
     }
   };
+
 
   
     const { mutateAsync: saveJournal } = useMutation({
@@ -119,10 +133,16 @@ const queryClient = useQueryClient();
 
   setSaving(false);
 
-  if (result?.error) {
-    toast.error(result.error);
+   //Pricing update handleSave — after result check
+if (result?.error) {
+  if ("upgrade" in result && result.upgrade) {
+    showUpgrade(result.error ?? undefined);
     return;
   }
+
+  toast.error(result.error);
+  return;
+}
 
   toast.success(journalId ? "Journal updated" : "Journal saved");
 
@@ -311,6 +331,8 @@ const queryClient = useQueryClient();
           })}
         </p>
       </div>
+      {/* ✅ add this */}
+    <UpgradeDialog open={open} onClose={onClose} reason={reason} />
     </div>
   );
 }

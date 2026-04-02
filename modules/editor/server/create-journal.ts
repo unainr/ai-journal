@@ -2,6 +2,7 @@
 
 import { db } from "@/drizzle/db";
 import { Journals, journals } from "@/drizzle/schema";
+import { canCreateJournal, getImageLimit } from "@/modules/pricing/server/pricing";
 import { auth } from "@clerk/nextjs/server";
 import { desc, eq, and } from "drizzle-orm";
 
@@ -16,7 +17,13 @@ export const createJournal = async (input: CreateJournalInput) => {
   if (!userId) return { error: "Unauthorized" };
 
   if (!input.content) return { error: "Content is required" };
+// check journal limit
+  const { allowed, error, upgrade } = await canCreateJournal();
+  if (!allowed) return { error, upgrade };
 
+  // slice images to plan limit
+  const { limit } = await getImageLimit();
+  const imageUrls = (input.imageUrls ?? []).slice(0, limit);
   try {
     const [journal] = await db
       .insert(journals)

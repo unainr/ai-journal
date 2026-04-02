@@ -8,15 +8,15 @@ import { useScroll } from "motion/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { ModeToggle } from "../theme/mode-toggle"
 import { usePathname } from "next/navigation"
 import { SignInButtonClerk } from "../clerk-sign-button/Sign-in-button"
 import Image from "next/image"
+import { ThemeSwitcher } from "../theme/mode-toggle"
 
 
 const menuItems = [
    { name: 'Home', href: '/' },
-   { name: 'dashboard', href: '/dashboard' },
+   { name: 'Pricing', href: '/pricing' },
   
 ]
 
@@ -110,7 +110,7 @@ const pathname = usePathname();
             
               
               <Separator orientation="vertical" />
-              <ModeToggle />
+              <ThemeSwitcher />
               <Separator orientation="vertical" />
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                <SignInButtonClerk/>

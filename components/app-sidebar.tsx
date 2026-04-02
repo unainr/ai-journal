@@ -17,7 +17,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { DashboardSquare01Icon, Menu01Icon, ChartHistogramIcon, Folder01Icon, UserGroupIcon, Camera01Icon, File01Icon, Settings05Icon, HelpCircleIcon, SearchIcon, Database01Icon, Analytics01Icon, CommandIcon } from "@hugeicons/core-free-icons"
 import { SignInButtonClerk } from "./clerk-sign-button/Sign-in-button"
-import { ModeToggle } from "./theme/mode-toggle"
 import JournalSidebarList from "@/modules/editor/ui/all-journal"
 
 const data = {
@@ -84,7 +83,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {/* <NavMain items={data.navMain} /> */}
         <JournalSidebarList/>
-       <ModeToggle/>
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>

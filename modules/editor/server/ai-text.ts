@@ -1,5 +1,6 @@
 "use server"
 
+import { canUseAI } from "@/modules/pricing/server/pricing";
 import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 export type AIAction =
@@ -21,6 +22,8 @@ const prompts: Record<AIAction, string> = {
   grammar:  "Fix all grammar, spelling and punctuation errors. Return only the corrected text, nothing else.",
 };
 export const aiText = async (action: AIAction, content: string) => {
+    const { allowed, error, upgrade } = await canUseAI();
+  if (!allowed) return { success: false, error, upgrade };
     try {
         const { text } = await generateText({
             model: groq("llama-3.3-70b-versatile"),
