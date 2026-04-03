@@ -101,3 +101,21 @@ export const getImageLimit = async () => {
   const isPro = has({ plan: "pro" });
   return { limit: isPro ? Infinity : FREE_LIMITS.images };
 };
+
+
+export const getUserPlan = async () => {
+  const { userId, has } = await auth();
+  if (!userId) return { isPro: false, journalCount: 0 };
+
+  const isPro = has({ plan: "pro" });
+
+  const [{ total }] = await db
+    .select({ total: count() })
+    .from(journals)
+    .where(eq(journals.userId, userId));
+
+  return {
+    isPro,
+    journalCount: Number(total),
+  };
+};

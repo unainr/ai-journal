@@ -181,6 +181,7 @@ if (result?.error) {
   const wordCount = editor?.getText().trim().split(/\s+/).filter(Boolean).length ?? 0;
 
   return (
+    <>
     <div className="min-h-screen  flex items-start justify-center px-4 py-12">
       <div className="w-full  flex flex-col gap-0">
 
@@ -299,7 +300,7 @@ if (result?.error) {
 
           {/* Editor content */}
          <div className="relative">
-        <AIFloatingBar editor={editor} />
+        <AIFloatingBar editor={editor} onUpgrade={showUpgrade} />
         <EditorContent editor={editor} />
         </div>
 
@@ -332,7 +333,8 @@ if (result?.error) {
         </p>
       </div>
       {/* ✅ add this */}
-    <UpgradeDialog open={open} onClose={onClose} reason={reason} />
     </div>
+    <UpgradeDialog open={open} onClose={onClose} reason={reason} />
+    </>
   );
 }

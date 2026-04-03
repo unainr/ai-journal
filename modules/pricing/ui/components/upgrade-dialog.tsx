@@ -10,11 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sparkles, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { useTransition } from "react";
 type Props = {
   open: boolean;
   onClose: () => void;
-  reason?: string; // what feature they tried to use
+  reason?: string;
 };
 
 const PRO_FEATURES = [
@@ -27,6 +27,15 @@ const PRO_FEATURES = [
 
 export function UpgradeDialog({ open, onClose, reason }: Props) {
   const router = useRouter();
+   const [, startTransition] = useTransition();
+  console.log("Initial page load...");
+
+const handleUpgrade = () => {
+    onClose();
+    startTransition(() => {
+      router.push("/pricing");
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -43,7 +52,6 @@ export function UpgradeDialog({ open, onClose, reason }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Features list */}
         <div className="flex flex-col gap-2 py-2">
           {PRO_FEATURES.map((feature) => (
             <div key={feature} className="flex items-center gap-2.5">
@@ -53,25 +61,21 @@ export function UpgradeDialog({ open, onClose, reason }: Props) {
           ))}
         </div>
 
-        {/* Price */}
         <div className="flex items-baseline gap-1 py-1">
           <span className="text-2xl font-semibold text-foreground">$5</span>
           <span className="text-sm text-muted-foreground">/month</span>
         </div>
 
-        {/* Actions */}
         <div className="flex flex-col gap-2">
-          <Button
-            onClick={() => {
-              onClose();
-              router.push("/pricing");
-            }}
-            className="w-full gap-2"
-          >
+          <Button className="w-full gap-2" onClick={handleUpgrade}>
             <Sparkles size={13} />
             Upgrade to Pro
           </Button>
-          <Button variant="ghost" onClick={onClose} className="w-full text-muted-foreground">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="w-full text-muted-foreground"
+          >
             Maybe later
           </Button>
         </div>
