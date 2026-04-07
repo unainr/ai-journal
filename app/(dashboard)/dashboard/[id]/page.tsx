@@ -1,10 +1,14 @@
 import { getJournalById } from '@/modules/editor/server/create-journal';
 import JournalEditor from '@/modules/editor/ui/journal-editor';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import React from 'react'
 interface Props{
     params:Promise<{id:string}>
 }
 const JournalIdPage = async ({params}:Props) => {
+   const { userId } = await auth();
+      if (!userId) redirect("/sign-in");
   const {id} = await params
     const journalRes = await getJournalById(id);
  if (!journalRes.success) {

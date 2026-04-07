@@ -1,125 +1,116 @@
-"use client"
+"use client";
 
-import React from "react"
-import Link from "next/link"
-import { Menu, Search, X } from "lucide-react"
-import { useScroll } from "motion/react"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { usePathname } from "next/navigation"
-import { SignInButtonClerk } from "../clerk-sign-button/Sign-in-button"
-import Image from "next/image"
-import { ThemeSwitcher } from "../theme/mode-toggle"
-
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { Menu, X, Moon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { ThemeSwitcher } from "../theme/mode-toggle";
+import { SignInButtonClerk } from "../clerk-sign-button/Sign-in-button";
 
 const menuItems = [
-   { name: 'Home', href: '/' },
-   { name: 'Pricing', href: '/pricing' },
-  
-]
+  { name: "Home", href: "/" },
+  { name: "Features", href: "/features" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Dashboard", href: "/dashboard" },
+];
 
-export const MainHeader = () => {
-  const [menuState, setMenuState] = React.useState(false)
-  const [scrolled, setScrolled] = React.useState(false)
-const pathname = usePathname();
-  const isActive = (path: string) => pathname === path;
-  const { scrollYProgress } = useScroll()
+export function MainHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
-  React.useEffect(() => {
-    const unsubscribe = scrollYProgress.on("change", (latest) => {
-      setScrolled(latest > 0.05)
-    })
-    return () => unsubscribe()
-  }, [scrollYProgress])
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header>
-      <nav
-        data-state={menuState && "active"}
-        className={cn(
-          "fixed z-50 h-14 w-full border-b transition-colors duration-150",
-          scrolled && "bg-background/50 backdrop-blur-xl"
-        )}
-      >
-        <div className="h-full px-3 transition-all duration-300">
-          <div className="relative flex h-full flex-wrap items-center justify-between gap-3 lg:gap-0">
-            <div className="flex h-full w-full items-center justify-between gap-6 lg:w-auto">
-              <Link
-                href="/"
-                className="-mr-3 flex items-center gap-2 whitespace-nowrap"
-              >
-                <Image
-                  src="/vercel.svg"
-                  alt="Design Logo"
-                  height={50}
-                  width={50}
-                  className="z-10 hidden h-6 w-full object-contain dark:block"
-                />
-                <Image
-                  src="/vercel.svg"
-                  alt="Design Logo"
-                  height={50}
-                  width={50}
-                  className="z-10 block h-6 w-full object-contain dark:hidden"
-                />
-              </Link>
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 h-14 border-b border-white/6 bg-background/50 backdrop-blur-xl">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-5">
 
-              <Separator className="hidden lg:block" orientation="vertical" />
+          {/* LEFT — logo + separator + links */}
+          <div className="flex h-full items-center">
+            <Link href="/" className="flex items-center gap-2 pr-5">
+              <Image
+                src="/logo2.png"
+                alt="InkFlow"
+                width={120}
+                height={32}
+                className="h-12 w-auto object-contain"
+              />
+            </Link>
 
-              <button
-                onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? "Close Menu" : "Open Menu"}
-                className="relative z-20 -m-2.5 mr-2 block cursor-pointer p-2.5 lg:hidden"
-              >
-                <Menu className="m-auto size-6 duration-200 in-data-[state=active]:scale-0 in-data-[state=active]:rotate-180 in-data-[state=active]:opacity-0" />
-                <X className="absolute inset-0 m-auto size-6 scale-0 -rotate-180 opacity-0 duration-200 in-data-[state=active]:scale-100 in-data-[state=active]:rotate-0 in-data-[state=active]:opacity-100" />
-              </button>
+            {/* Separator */}
+            <div className="hidden h-5 w-px bg-white/10 lg:block" />
 
-              <div className="hidden lg:block">
-                <ul className="flex gap-10 text-sm">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={item.href}
-                        className={cn('text-accent-foreground hover:text-muted-foreground block duration-150',isActive(item.href)&&'text-red-400 hover:text-red-500 underline underline-offset-4  font-semibold')}>
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Desktop links */}
+            <ul className="ml-5 hidden h-full items-center lg:flex">
+              {/* {menuItems.map((item) => (
+                <li key={item.href} className="h-full">
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "relative flex h-full items-center px-3.5 text-sm font-medium transition-colors duration-150",
+                      isActive(item.href)
+                        ? "text-[#d84b67] after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.5 after:rounded-t after:bg-[#f86c88]"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))} */}
+            </ul>
+          </div>
+
+          {/* RIGHT — theme + separator + cta + mobile toggle */}
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+
+            {/* Separator */}
+            <div className="hidden h-5 w-px bg-white/10 lg:block" />
+
+            <div className="hidden items-center gap-2 lg:flex">
+              <SignInButtonClerk />
             </div>
 
-            <div className="bg-background mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl in-data-[state=active]:block md:flex-nowrap lg:m-0 lg:flex lg:h-14 lg:w-fit lg:gap-4 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none lg:in-data-[state=active]:flex dark:shadow-none dark:lg:bg-transparent">
-              <div className="lg:hidden">
-                <ul className="space-y-6 text-base">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={item.href}
-                        className={cn('text-accent-foreground hover:text-muted-foreground block duration-150',isActive(item.href)&&'text-red-400 hover:text-red-500 underline underline-offset-4  font-semibold')}
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            
-              
-              <Separator orientation="vertical" />
-              <ThemeSwitcher />
-              <Separator orientation="vertical" />
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-               <SignInButtonClerk/>
-               
-              </div>
-            </div>
+            {/* Mobile toggle */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-white/8 bg-transparent text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+            >
+              {menuOpen ? <X className="size-4.5" /> : <Menu className="size-4.5" />}
+            </button>
           </div>
         </div>
-      </nav>
-    </header>
-  )
+      </header>
+
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="fixed inset-x-0 top-14 z-40 border-b border-white/6 bg-background/95 backdrop-blur-xl lg:hidden">
+          <nav className="flex flex-col gap-1 p-4">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className={cn(
+                  "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  isActive(item.href)
+                    ? "bg-red-500/10 text-[#f86c88]"
+                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <div className="mt-3 flex gap-2 border-t border-white/6 pt-3">
+              <SignInButtonClerk />
+            </div>
+          </nav>
+        </div>
+      )}
+    </>
+  );
 }

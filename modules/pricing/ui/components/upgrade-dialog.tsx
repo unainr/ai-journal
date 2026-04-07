@@ -67,7 +67,7 @@ const handleUpgrade = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button className="w-full gap-2" onClick={handleUpgrade}>
+          <Button variant={'primary'} className="w-full gap-2" onClick={handleUpgrade}>
             <Sparkles size={13} />
             Upgrade to Pro
           </Button>

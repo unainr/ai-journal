@@ -271,6 +271,8 @@ if (result?.error) {
             <div className="w-px h-4 bg-white/8 mx-1.5" />
 
             <Button
+            className="rounded-none"
+            variant={'primary'}
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
@@ -295,7 +297,7 @@ if (result?.error) {
             {/* divider */}
             <div className="w-px h-4 bg-white/8 mx-1.5" />
 
-            <AiMermaidDrawer />
+            <AiMermaidDrawer editor={editor} />
           </div>
 
           {/* Editor content */}
@@ -311,10 +313,11 @@ if (result?.error) {
             </span>
 
             <Button
+            variant={'primary'}
               type="button"
               onClick={handleSave}
+              className="rounded-none"
               disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-xs font-semibold tracking-wide transition-all duration-150 hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save size={12} />
               {saving ? "Saving…" : "Save journal"}
