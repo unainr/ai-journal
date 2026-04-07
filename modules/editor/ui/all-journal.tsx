@@ -19,11 +19,11 @@ export default function JournalSidebarList() {
  )
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 ">
       {/* New entry button */}
      <Link href={'/dashboard/new'}>
       <Button
-      variant={'default'}
+      variant={'primary'}
         className="w-full"
         >
         <PenLine size={12} />

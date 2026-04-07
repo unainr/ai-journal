@@ -11,11 +11,30 @@ export const generateMermaidCode = async (prompt: string) => {
    
 
     const { text } = await generateText({
-      model: groq("openai/gpt-oss-120b"),
-      prompt: `Generate a Mermaid.js diagram for the following request: "${prompt}". 
-      Respond ONLY with the raw valid Mermaid code block. Do NOT include markdown formatting like \`\`\`mermaid or \`\`\`. 
-      Start directly with the diagram type (e.g. graph TD, sequenceDiagram, pie, etc). Do not add any conversational text or explanation.`,
-    });
+      model: groq("llama-3.3-70b-versatile"),
+      prompt: `You are an expert diagram architect. Generate a beautiful, well-structured Mermaid.js diagram for: "${prompt}".
+
+RULES:
+- Respond with ONLY raw Mermaid code. No markdown, no backticks, no explanation.
+- Start directly with the diagram type keyword (graph, sequenceDiagram, flowchart, pie, etc.)
+
+QUALITY GUIDELINES:
+- Use "flowchart TD" or "flowchart LR" (not "graph") for flow-based diagrams — it renders cleaner
+- Give every node a short, readable label (2-5 words max per node)
+- Use subgraphs to group related nodes when there are 6+ nodes
+- Prefer top-down (TD) for processes/flows, left-right (LR) for hierarchies/trees
+- Use meaningful node shapes:
+    - Rectangles [label] for actions/steps
+    - Rounded rectangles (label) for start/end
+    - Diamonds {label} for decisions
+    - Stadiums([label]) for events/triggers
+    - Cylinders[(label)] for databases/storage
+- Add edge labels on connections where it clarifies the relationship (e.g. -->|yes| or -->|API call|)
+- Keep it focused: 6–14 nodes is the sweet spot. Do not over-engineer.
+- Ensure all node IDs are unique and alphanumeric (no spaces or special chars in IDs)
+
+Return only the Mermaid code. Nothing else.`,
+});
 
     // Ensure we strictly extract exactly what is inside the markdown block 
     // if the AI decided to be conversational.

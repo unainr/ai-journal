@@ -8,7 +8,7 @@ export const SignInButtonClerk = () => {
 		<>
 			<Show when="signed-out">
 				<SignInButton>
-					<Button asChild>
+					<Button variant={'primary'} asChild >
 						<Link href="/sign-in">Get Started</Link>
 					</Button>
 				</SignInButton>
@@ -16,7 +16,7 @@ export const SignInButtonClerk = () => {
 
 			<Show when="signed-in">
 				<UserButton />
-				<Button asChild>
+				<Button variant={'primary'} asChild className="rounded-none">
 					<Link href="/dashboard">Dashboard</Link>
 				</Button>
 			</Show>
