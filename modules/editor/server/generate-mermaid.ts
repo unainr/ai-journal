@@ -11,7 +11,7 @@ export const generateMermaidCode = async (prompt: string) => {
    
 
     const { text } = await generateText({
-      model: groq("llama-3.3-70b-versatile"),
+      model: groq("openai/gpt-oss-120b"),
       prompt: `You are an expert diagram architect. Generate a beautiful, well-structured Mermaid.js diagram for: "${prompt}".
 
 RULES:
