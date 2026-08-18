@@ -26,7 +26,7 @@ export const aiText = async (action: AIAction, content: string) => {
   if (!allowed) return { success: false, error, upgrade };
     try {
         const { text } = await generateText({
-            model: groq("llama-3.3-70b-versatile"),
+            model: groq("openai/gpt-oss-120b"),
             system: prompts[action],
             prompt:content,
             maxOutputTokens:3000
